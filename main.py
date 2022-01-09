@@ -1,5 +1,7 @@
 import random
 import re
+import sys
+from typing import Counter
 
 
 def parse_passwd_list(path):
@@ -104,3 +106,22 @@ if __name__ == '__main__':
     cipher = encrypt('adobe123', passwd, message_to_seed, n)
     mess = decrypt(cipher, '11', seed_to_message, n)
     print(mess)
+
+    for _ in range (20):
+        decrypted_with_wrong_password = decrypt(cipher, random.randint(1,sys.maxsize), seed_to_message, n)
+        print(decrypted_with_wrong_password)
+
+    c = 100000
+    counted = Counter((decrypt(cipher, random.randint(1,sys.maxsize), seed_to_message, n) for _ in range(c)))
+    prob_list_counted = list()
+    for passwd, count in sorted(counted.items(), key=lambda x: x[1], reverse=True):
+        prob_list_counted.append((passwd, count/c))
+
+    zipped = list(zip(prob_list, prob_list_counted))
+
+    for p, pc in zipped:
+        if p[0] == 'freedom':
+            print("FREEDOM \n\n\n")
+        print(f'password - {p[0]}\treal prob - {p[1]}\tcounted prob - {pc[1]}')
+    
+
